@@ -8,7 +8,7 @@ import Diet from "../models/Diet.js";
 const getRecipes = async (req, res) => {
   // Peticion a la api Spoonacular
   const resp = await fetch(
-    `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.API_KEY}&addRecipeInformation=true`
+    `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.API_KEY}&addRecipeInformation=true&number=100`
   );
   const { results } = await resp.json();
 
