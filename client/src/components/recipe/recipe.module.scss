@@ -2,14 +2,16 @@
 
 .main_container {
   display: flex;
-  flex-flow: column wrap;
+  flex-direction: column;
+
+  @media screen and (min-width: 768px) {
+    flex-direction: row;
+  }
 
   .img_container {
-    width: 100%;
-
     img {
       width: 100%;
-      height: 350px;
+      height: 300px;
       border-radius: 0px 0px 30px 30px;
     }
   }
@@ -17,12 +19,11 @@
   .header_container {
     display: flex;
     flex-flow: column wrap;
-    border-bottom:1px solid #bbbec2;
-    width: 90%;
+    border-bottom: 1px solid #bbbec2;
+    width: 85%;
     align-self: center;
 
     .diet_container {
-
       ul {
         display: flex;
         flex-wrap: wrap;
@@ -50,14 +51,33 @@
     }
   }
 
-  .body_container {
+}
+
+.body_container {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+
+  span {
+    color: $secondary_color;
+    text-align: center;
+  }
+}
+
+.steps_container {
+  margin-top: 50px;
+
+  .header_steps {
     display: flex;
     flex-flow: column wrap;
     align-items: center;
 
-    span{
+    span {
+      padding: 16px 24px;
+      padding: 16px;
+      background: #f6f8fb;
+      border-radius: 100px;
       color: $secondary_color;
-      text-align: center;
     }
   }
 }

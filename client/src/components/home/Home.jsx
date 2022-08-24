@@ -18,7 +18,6 @@ export const Home = () => {
   const [pagina, setPagina] = useState(1);
   const [porPagina, setPorPagina] = useState(9);
 
-
   // Metodos
   const nextpage = () => {
     if (12 > pagina) {
@@ -28,7 +27,7 @@ export const Home = () => {
   };
 
   const prevpage = () => {
-    if (0 < pagina) {
+    if (1 < pagina) {
       setPagina(pagina - 1);
     }
   };
@@ -70,63 +69,60 @@ export const Home = () => {
   };
 
   const handleFilterByDiets = async (diet) => {
-    
     if (diet !== "All") {
-
       var recipesFilter = [];
       const recipes = await getAllRecipes();
       dispatch(showAllRecipes(recipes));
 
       recipesFilter = allRecipes?.filter((r) => r.diets.includes(diet));
       dispatch(showAllRecipes(recipesFilter));
-
     } else {
       const recipes = await getAllRecipes();
       dispatch(showAllRecipes(recipes));
     }
-
-
   };
-
 
   useEffect(() => {
     if (inputRecipe === "") {
       getAllRecipes().then((recipes) => dispatch(showAllRecipes(recipes)));
-      getDiets().then((diet) => dispatch(showDiets(diet)));
     }
+
+    getDiets().then((diet) => dispatch(showDiets(diet)));
   }, [inputRecipe]);
-
-
 
   return (
     <div className={styles.main_container}>
       {/* Header */}
       <div className={styles.wave}></div>
-      <h1>Home</h1>
 
-      {/* Search Form*/}
-      <form onSubmit={handleInputRecipeSubmit}>
-        <div className={styles.search}>
-          <div>
-            <input
-              type="text"
-              name="name"
-              onChange={handleInputRecipeChange}
-              placeholder="Search . . ."
-              required
-            />
-          </div>
+      <div className={styles.header_container}>
+        <h1>Home</h1>
+
+        <div className={styles.input_container}>
+          {/* Search Form*/}
+          <form onSubmit={handleInputRecipeSubmit}>
+            <div className={styles.search}>
+              <div>
+                <input
+                  type="text"
+                  name="name"
+                  onChange={handleInputRecipeChange}
+                  placeholder="Search . . ."
+                  required
+                />
+              </div>
+            </div>
+          </form>
+
+          {/* Add */}
+          <Link to="/create" className={styles.input_create}>+</Link>
+
         </div>
-      </form>
+      </div>
 
       {/* Filters */}
       <div className={styles.container_filter}>
-        <input
-          type="radio"
-          id="All"
-          name="categories"
-          value="All"
-        />
+        <input type="radio" id="All" name="categories" value="All" />
 
         {diets?.map((d) => (
           <input
@@ -140,7 +136,9 @@ export const Home = () => {
 
         <ol className={styles.filters}>
           <li>
-            <label htmlFor="All" onClick={() => handleFilterByDiets("All")}>All</label>
+            <label htmlFor="All" onClick={() => handleFilterByDiets("All")}>
+              All
+            </label>
           </li>
           {diets?.map((d) => (
             <li key={d.id}>
@@ -155,12 +153,12 @@ export const Home = () => {
         </ol>
       </div>
 
-      {/* Cards */}
       <div className={styles.page}>
         <GrLinkPrevious className={styles.page_icon} onClick={prevpage} />
         <GrLinkNext className={styles.page_icon} onClick={nextpage} />
       </div>
 
+      {/* Cards */}
       <div className={styles.container}>
         {!allRecipes ? (
           <div className={styles.lds_dual_ring}></div>
