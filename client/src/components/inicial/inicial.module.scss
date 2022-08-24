@@ -1,0 +1,121 @@
+@import '../../index.scss';
+
+.inicial {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: Poppins;
+  overflow: hidden;
+
+  .wave {
+    height: 100%;
+    overflow: hidden;
+    
+
+    svg {
+      height: 100%;
+      width: 100%;
+    }
+
+    path {
+      stroke: none;
+      fill: $primary_color;
+    }
+  }
+
+  .main_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+    }
+
+    .head_container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      h1 {
+        font-size: 45px;
+
+        @media screen and (max-width: 425px) {
+          font-size: 35px;
+        }
+      }
+
+      h3 {
+        font-size: 25px;
+
+        @media screen and (max-width: 425px) {
+          font-size: 20px;
+        }
+      }
+
+      .button {
+        display: inline-block;
+        text-align: center;
+        background: $primary_color;
+        color: #000;
+        font-weight: bold;
+        padding: 1.18em 1.32em 1.03em;
+        line-height: 1;
+        border-radius: 1em;
+        position: relative;
+        min-width: 8.23em;
+        text-decoration: none;
+        font-size: 1.25rem;
+
+        @media screen and (max-width: 425px) {
+          font-size: 1rem;
+        }
+      }
+
+      .button::before,
+      .button::after {
+        width: 4.4em;
+        height: 2.95em;
+        position: absolute;
+        content: "";
+        display: inline-block;
+        background: $primary_color;
+        border-radius: 50%;
+        transition: transform 0.7s ease;
+        -webkit-transform: scale(0);
+        transform: scale(0);
+        z-index: -1;
+      }
+
+      .button::before {
+        top: -25%;
+        left: 20%;
+      }
+
+      .button::after {
+        bottom: -25%;
+        right: 20%;
+      }
+
+      .button:hover::before,
+      .button:hover::after {
+        transform: none;
+      }
+    }
+
+    .imgFood_container {
+      img {
+        max-width: 800px;
+
+        @media screen and (max-width: 768px) {
+          max-width: 700px;
+        }
+
+        @media screen and (max-width: 425px) {
+          max-width: 520px;
+        }
+      }
+    }
+  }
+}

@@ -1,10 +1,17 @@
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Inicial } from "./components/inicial/Inicial";
+import { Home } from "./components/home/Home";
+import { Recipe } from "./components/recipe/Recipe";
 
 function App() {
   return (
-    <div className="App">
-      <h1>Henry Food</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Inicial />} />
+        <Route path="home" element={<Home />} />
+        <Route path="recipe/:id" element={<Recipe/>}/>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
