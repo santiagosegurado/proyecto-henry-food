@@ -1,0 +1,130 @@
+@import "../../index.scss";
+
+.main_container {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  width: 100vw;
+  overflow: hidden;
+
+  .img_container {
+    img {
+      width: 100%;
+      max-width: 430px;
+    }
+  }
+
+  .form_container {
+    display: flex;
+    margin: auto;
+    width: 90%;
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-self: center;
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+
+      input {
+        font-family: Poppins;
+        border-radius: 20px;
+        padding: 10px;
+        font-size: 20px;
+        text-align: center;
+        margin-bottom: 10px;
+        background-color: $primary_color;
+        border: solid 1px #fff;
+        width: 100%;
+      }
+
+      textarea {
+        background-color: $primary_color;
+        font-family: Poppins;
+        border-radius: 20px;
+        padding: 10px;
+        font-size: 20px;
+        text-align: center;
+        border: 1px solid #fff;
+        margin-bottom: 10px;
+      }
+    }
+  }
+
+  .container_filter {
+    z-index: 1;
+    input[type="radio"] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .filters {
+      display: flex;
+      flex-flow: row wrap;
+      margin-bottom: 2rem;
+    }
+
+    .filters * {
+      display: inline-block;
+    }
+
+    .filters label {
+      padding: 0.5rem 1rem;
+      margin-bottom: 0.25rem;
+      border-radius: 2rem;
+      min-width: 50px;
+      line-height: normal;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .filters label:hover {
+      background: darken($primary_color, $amount: 25);
+      color: #fff;
+    }
+
+    .selected_diets{
+      display: flex;
+      p {
+        padding: 7px;
+        margin: 5px;
+        border-radius: 15px;
+        background: $primary_color;
+      }
+    }
+
+
+    [value="gluten free"]:checked ~ .filters [for="gluten free"],
+    [value="ketogenic"]:checked ~ .filters [for="ketogenic"],
+    [value="vegan"]:checked ~ .filters [for="vegan"],
+    [value="pescatarian"]:checked ~ .filters [for="pescatarian"],
+    [value="paleolithic"]:checked ~ .filters [for="paleolithic"],
+    [value="primal"]:checked ~ .filters [for="primal"],
+    [value="foodmap friendly"]:checked ~ .filters [for="foodmap friendly"],
+    [value="whole 30"]:checked
+      ~ .filters
+      [for="whole 30"]
+      [value="lacto ovo vegetarian"]:checked
+      ~ .filters
+      [for="lacto ovo vegetarian"] {
+      background: darken($primary_color, $amount: 25);
+      color: #fff;
+    }
+  }
+
+  .steps_container{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .button_add_step{
+      font-size: 24px;
+      background-color: darken($primary_color, $amount: 25);
+      border: none;
+      border-radius: 100%;
+      color: #fff;
+      padding: 5px 10px 5px 10px;
+    }
+  }
+}

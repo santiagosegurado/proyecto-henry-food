@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Inicial } from "./components/inicial/Inicial";
 import { Home } from "./components/home/Home";
 import { Recipe } from "./components/recipe/Recipe";
@@ -12,6 +12,7 @@ function App() {
         <Route path="home" element={<Home />} />
         <Route path="recipe/:id" element={<Recipe/>}/>
         <Route path="create" element={<Create />}/>
+        <Route path="*" element={<Navigate to="/home" replace/>} />
       </Routes>
     </BrowserRouter>
   );

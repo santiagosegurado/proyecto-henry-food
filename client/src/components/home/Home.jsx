@@ -18,9 +18,11 @@ export const Home = () => {
   const [pagina, setPagina] = useState(1);
   const [porPagina, setPorPagina] = useState(9);
 
+  var maximo = allRecipes && Math.round(allRecipes.length / porPagina) + 1;
+
   // Metodos
   const nextpage = () => {
-    if (12 > pagina) {
+    if (maximo > pagina) {
       setPagina(pagina + 1);
       return;
     }
@@ -69,13 +71,40 @@ export const Home = () => {
   };
 
   const handleFilterByDiets = async (diet) => {
-    if (diet !== "All") {
+    if (diet !== "All" && diet !== "healthScore" && diet !== "az") {
       var recipesFilter = [];
       const recipes = await getAllRecipes();
       dispatch(showAllRecipes(recipes));
 
       recipesFilter = allRecipes?.filter((r) => r.diets.includes(diet));
       dispatch(showAllRecipes(recipesFilter));
+    } else if (diet === "healthScore") {
+      const recipes = await getAllRecipes();
+      dispatch(showAllRecipes(recipes));
+      
+      let recipeSortByHS = allRecipes.slice().sort((a,b)=> {
+        return b.healthScore - a.healthScore;
+      })
+      dispatch(showAllRecipes(recipeSortByHS));
+    }else if(diet === "az") {
+      const recipes = await getAllRecipes();
+      dispatch(showAllRecipes(recipes));
+      
+      let recipeSortByAZ = allRecipes.slice().sort((a,b)=> {
+        let nameA = a.name.toLowerCase();
+        let nameB = b.name.toLowerCase();
+
+        if (nameA < nameB) {
+          return -1;
+        }
+
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        return 0;
+      })
+      dispatch(showAllRecipes(recipeSortByAZ));
     } else {
       const recipes = await getAllRecipes();
       dispatch(showAllRecipes(recipes));
@@ -89,6 +118,7 @@ export const Home = () => {
 
     getDiets().then((diet) => dispatch(showDiets(diet)));
   }, [inputRecipe]);
+
 
   return (
     <div className={styles.main_container}>
@@ -115,14 +145,27 @@ export const Home = () => {
           </form>
 
           {/* Add */}
-          <Link to="/create" className={styles.input_create}>+</Link>
-
+          <Link to="/create" className={styles.input_create}>
+            +
+          </Link>
         </div>
       </div>
 
       {/* Filters */}
       <div className={styles.container_filter}>
         <input type="radio" id="All" name="categories" value="All" />
+        <input
+          type="radio"
+          id="healthScore"
+          name="categories"
+          value="healthScore"
+        />
+        <input
+          type="radio"
+          id="az"
+          name="categories"
+          value="az"
+        />
 
         {diets?.map((d) => (
           <input
@@ -140,6 +183,22 @@ export const Home = () => {
               All
             </label>
           </li>
+          <li>
+            <label
+              htmlFor="healthScore"
+              onClick={() => handleFilterByDiets("healthScore")}
+            >
+              Health Score
+            </label>
+          </li>
+          <li>
+            <label
+              htmlFor="az"
+              onClick={() => handleFilterByDiets("az")}
+            >
+              A-Z
+            </label>
+          </li>
           {diets?.map((d) => (
             <li key={d.id}>
               <label
@@ -153,8 +212,12 @@ export const Home = () => {
         </ol>
       </div>
 
+      {/* Paginacion */}
       <div className={styles.page}>
         <GrLinkPrevious className={styles.page_icon} onClick={prevpage} />
+        <p>
+          {pagina} / {maximo}
+        </p>
         <GrLinkNext className={styles.page_icon} onClick={nextpage} />
       </div>
 
