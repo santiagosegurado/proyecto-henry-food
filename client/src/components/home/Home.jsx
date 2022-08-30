@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { AiOutlineArrowsAlt } from "react-icons/ai";
-import { GrLinkPrevious, GrLinkNext } from "react-icons/gr";
-
+import { Link, useLocation, useSearchParams } from "react-router-dom";
+import left from "../../assets/img/arrow-left-solid.svg";
+import right from "../../assets/img/arrow-right-solid.svg";
 import styles from "./home.module.scss";
-import { showAllRecipes } from "../../features/recipes/recipesSilce";
-import { showDiets } from "../../features/diets/dietSlice";
+import home from "../../assets/img/house-solid.svg";
+import { showAllRecipes } from "../../features/recipes/recipesSlice";
+import { getDiet } from "../../features/diets/dietSlice";
+import { getRecipes } from "../../features/recipes/recipesSlice";
+import { getAllRecipes } from "../../helpers/getAllRecipes";
 
 export const Home = () => {
   // Hooks
   const dispatch = useDispatch();
-  const { allRecipes } = useSelector((state) => state.recipes);
+  const { recipes, status } = useSelector((state) => state.recipes);
   const { diets } = useSelector((state) => state.diets);
+  var [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
 
-  const [inputRecipe, setInputRecipe] = useState("");
   const [pagina, setPagina] = useState(1);
-  const [porPagina, setPorPagina] = useState(9);
+  const [porPagina] = useState(9);
 
-  var maximo = allRecipes && Math.round(allRecipes.length / porPagina) + 1;
+  var maximo = Math.round(recipes.length / porPagina) +1;
 
   // Metodos
   const nextpage = () => {
@@ -34,38 +37,18 @@ export const Home = () => {
     }
   };
 
-  const getAllRecipes = async (name = null) => {
-    let resp;
-    name
-      ? (resp = await fetch(
-          `https://api-food-henry.herokuapp.com/recipes?name=${name}`
-        ))
-      : (resp = await fetch(`https://api-food-henry.herokuapp.com/recipes`));
-    const data = resp.json();
-
-    return data;
-  };
-
-  const getDiets = async () => {
-    const resp = await fetch(`https://api-food-henry.herokuapp.com/diet`);
-    const data = resp.json();
-
-    return data;
-  };
-
   // Handlers
   const handleInputRecipeChange = (e) => {
-    setInputRecipe(e.target.value);
+    setSearchParams({ name: e.target.value });
   };
 
   const handleInputRecipeSubmit = async (e) => {
     e.preventDefault();
 
-    if (!inputRecipe) {
+    if (!searchParams) {
       return;
     } else {
-      const recipesFilterbyName = await getAllRecipes(inputRecipe);
-      dispatch(showAllRecipes(recipesFilterbyName));
+      dispatch(getRecipes(location.search));
       setPagina(1);
     }
   };
@@ -73,24 +56,23 @@ export const Home = () => {
   const handleFilterByDiets = async (diet) => {
     if (diet !== "All" && diet !== "healthScore" && diet !== "az") {
       var recipesFilter = [];
-      const recipes = await getAllRecipes();
-      dispatch(showAllRecipes(recipes));
+      const recipe = await getAllRecipes();
+      dispatch(showAllRecipes(recipe));
 
-      recipesFilter = allRecipes?.filter((r) => r.diets.includes(diet));
+      recipesFilter = recipes?.filter((r) => r.diets.includes(diet));
       dispatch(showAllRecipes(recipesFilter));
+
     } else if (diet === "healthScore") {
-      const recipes = await getAllRecipes();
-      dispatch(showAllRecipes(recipes));
-      
-      let recipeSortByHS = allRecipes.slice().sort((a,b)=> {
+      let recipeSortByHS = recipes.slice().sort((a, b) => {
         return b.healthScore - a.healthScore;
-      })
+      });
       dispatch(showAllRecipes(recipeSortByHS));
-    }else if(diet === "az") {
-      const recipes = await getAllRecipes();
-      dispatch(showAllRecipes(recipes));
       
-      let recipeSortByAZ = allRecipes.slice().sort((a,b)=> {
+    } else if (diet === "az") {
+      // const recipe = await getAllRecipes();
+      // dispatch(showAllRecipes(recipe));
+
+      let recipeSortByAZ = recipes.slice().sort((a, b) => {
         let nameA = a.name.toLowerCase();
         let nameB = b.name.toLowerCase();
 
@@ -103,22 +85,18 @@ export const Home = () => {
         }
 
         return 0;
-      })
+      });
       dispatch(showAllRecipes(recipeSortByAZ));
     } else {
-      const recipes = await getAllRecipes();
-      dispatch(showAllRecipes(recipes));
+      const recipe = await getAllRecipes();
+      dispatch(showAllRecipes(recipe));
     }
   };
 
   useEffect(() => {
-    if (inputRecipe === "") {
-      getAllRecipes().then((recipes) => dispatch(showAllRecipes(recipes)));
-    }
-
-    getDiets().then((diet) => dispatch(showDiets(diet)));
-  }, [inputRecipe]);
-
+    dispatch(getRecipes());
+    dispatch(getDiet());
+  }, [dispatch]);
 
   return (
     <div className={styles.main_container}>
@@ -126,7 +104,9 @@ export const Home = () => {
       <div className={styles.wave}></div>
 
       <div className={styles.header_container}>
-        <h1>Home</h1>
+        <h1>
+          Home <img src={home} alt="home" style={{ width: "26px" }} />
+        </h1>
 
         <div className={styles.input_container}>
           {/* Search Form*/}
@@ -160,12 +140,7 @@ export const Home = () => {
           name="categories"
           value="healthScore"
         />
-        <input
-          type="radio"
-          id="az"
-          name="categories"
-          value="az"
-        />
+        <input type="radio" id="az" name="categories" value="az" />
 
         {diets?.map((d) => (
           <input
@@ -192,10 +167,7 @@ export const Home = () => {
             </label>
           </li>
           <li>
-            <label
-              htmlFor="az"
-              onClick={() => handleFilterByDiets("az")}
-            >
+            <label htmlFor="az" onClick={() => handleFilterByDiets("az")}>
               A-Z
             </label>
           </li>
@@ -214,19 +186,23 @@ export const Home = () => {
 
       {/* Paginacion */}
       <div className={styles.page}>
-        <GrLinkPrevious className={styles.page_icon} onClick={prevpage} />
+        <span className={styles.page_icon} onClick={prevpage}>
+          <img src={left} alt="left" />
+        </span>
         <p>
           {pagina} / {maximo}
         </p>
-        <GrLinkNext className={styles.page_icon} onClick={nextpage} />
+        <span className={styles.page_icon} onClick={nextpage}>
+          <img src={right} alt="right" />
+        </span>
       </div>
 
       {/* Cards */}
       <div className={styles.container}>
-        {!allRecipes ? (
+        {status === "loading" ? (
           <div className={styles.lds_dual_ring}></div>
         ) : (
-          allRecipes
+          recipes
             ?.slice(
               (pagina - 1) * porPagina,
               (pagina - 1) * porPagina + porPagina
@@ -249,7 +225,7 @@ export const Home = () => {
                   <div className={styles.user}>
                     <div className={styles.user_info}>
                       <Link className={styles.link} to={`/recipe/${r.id}`}>
-                        Show More <AiOutlineArrowsAlt />
+                        Show More
                       </Link>
                     </div>
                   </div>

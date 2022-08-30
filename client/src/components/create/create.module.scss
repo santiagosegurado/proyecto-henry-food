@@ -84,13 +84,22 @@
       color: #fff;
     }
 
+    
     .selected_diets{
       display: flex;
+    
+
       p {
         padding: 7px;
         margin: 5px;
         border-radius: 15px;
         background: $primary_color;
+      }
+
+      .no_selected_diets{
+        padding: 7px;
+        border-radius: 20px;
+        background-color: $primary_color;
       }
     }
 
@@ -111,6 +120,8 @@
       background: darken($primary_color, $amount: 25);
       color: #fff;
     }
+
+    
   }
 
   .steps_container{
@@ -126,5 +137,13 @@
       color: #fff;
       padding: 5px 10px 5px 10px;
     }
+  }
+
+  .error{
+    color: #fff;
+    padding: 5px;
+    border-radius: 20px;
+    background:lighten($color: red, $amount:15);
+    margin: 5px;
   }
 }

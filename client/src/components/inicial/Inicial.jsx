@@ -1,7 +1,7 @@
 import styles from "./inicial.module.scss"
 import imgFood from "../../assets/img/7878.jpg";
-import { TbSoup } from 'react-icons/tb';
-import { IoPlay } from 'react-icons/io5';
+import food from "../../assets/img/bowl-food-solid.svg";
+import play from '../../assets/img/play-solid.svg';
 import { Link } from "react-router-dom";
 
 
@@ -12,9 +12,9 @@ export function Inicial() {
     <div className={styles.inicial}>
       <div className={styles.main_container}>
         <div className={styles.head_container}>
-          <h1>Henry Food App <TbSoup/></h1>
+          <h1>Henry Food App <img src={food} alt="food app" style={{width: '30px'}} /></h1>
           <h3> What are we going to eat today? </h3>
-          <Link to="home" className={styles.button}>Start <IoPlay style={{fontSize: 16}}/></Link>
+          <Link to="home" className={styles.button}>Start <img src={play} alt="play" style={{width: '12px'}}/></Link>
         </div>
         
         <div className={styles.imgFood_container}>

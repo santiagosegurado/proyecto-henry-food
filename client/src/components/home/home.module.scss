@@ -165,12 +165,17 @@
     justify-content: space-around;
 
     .page_icon {
-      font-size: 24px;
       cursor: pointer;
       border: 2px solid #000;
-      padding: 5px;
-      border-radius: 20px;
+      border-radius: 100%;
+      padding: 7px;
       transition: all 0.3s ease;
+      height: 30px;
+
+      img {
+        width: 24px;
+      }
+      
 
       &:hover {
         transform: scale(1.1);

@@ -1,26 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./create.module.scss";
 import imgCreateFood from "../../assets/img/7627.jpg";
-import { useSelector } from "react-redux";
-import {Navigate, useNavigate} from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate} from 'react-router-dom';
+import { getDiet } from "../../features/diets/dietSlice";
 
 export const Create = () => {
   //Hooks
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { diets } = useSelector((state) => state.diets);
-  const [newRecipe, setNewRecipe] = useState({
-    name: "",
-    resume: "",
-    healthScore: 0,
-    diet: [],
-    steps: [],
-    img: ""
-  });
 
+  const [name, setName] = useState({name: '', valid: false});
+  const [resume, setResume] = useState('');
+  const [healthScore, setHealthScore] = useState({healthScore:0, valid: false});
+  const [dieta, setDieta] = useState({dietas: [], valid: false});
+  const [stepsForm, setStepsForm] = useState([]);
+  const [img, setImg] = useState({img: '', valid: false});
   
-  const [dieta, setDieta] = useState([]);
   const [pasos, setPasos] = useState([1]);
-  const [stepsForm, setStepsForm] = useState([])
 
   // Metodos
   const createRecipe = async (recipe) => {
@@ -36,51 +34,72 @@ export const Create = () => {
 
     return data;
   };
-
-
-  const handleDietChange = (e) => {
-    setDieta((d)=>[...d, e.target.value]);
-  }
-
-  const handleStepsChange = (e) => {
-    
-    setStepsForm( [...stepsForm, {[e.target.name]: e.target.value}]);
-
-  }
-
+  
   const handleInputChange = (e) => {
+    if (e.target.name === "name") {
+      
+      setName( {...name, name: e.target.value});
+    }
 
-    setNewRecipe({
-      ...newRecipe,
-      [e.target.name]: e.target.value,
-      diet: dieta,
-      steps: stepsForm,
-    });
+    if (e.target.name === "resume") {
+      setResume( e.target.value);
+    }
+    
+    if (e.target.name === "healthScore") {
+      setHealthScore({...healthScore, healthScore: e.target.value});
+    }
 
-  };
 
+    if (e.target.name === "diet") {
+      setDieta({...dieta,  dietas:[...dieta.dietas, e.target.value]})
+    }
+
+    if (e.target.name.includes("step")) {
+      setStepsForm({ ...stepsForm, [e.target.name]: e.target.value});
+    }
+    
+    if (e.target.name === "img") {
+      setImg({...img, img: e.target.value});
+    }
+
+
+  }
+  
   const handleSubmit = async(e) => {
     e.preventDefault();
-    const recipeDB = await createRecipe(newRecipe)
-    navigate("/home")
-    console.log(recipeDB)
+
+    await createRecipe({name: name.name, resume: resume, healthScore: healthScore.healthScore, steps: stepsForm, diet: dieta.dietas, img: img.img})
+
+    navigate('/home')
+
   };
+
+  useEffect(() => {
+    dispatch(getDiet())
+  }, [dispatch])
+  
 
   return (
     <div className={styles.main_container}>
       <h1>Add Recipe</h1>
       <div className={styles.img_container}>
-        <img src={imgCreateFood} alt="Hola" />
+        <img src={imgCreateFood} alt="createFood" />
       </div>
 
       <div className={styles.form_container}>
         <form onSubmit={handleSubmit}>
+          {
+            !name.valid && <p>Add Name</p>
+          }
           <input
             type="text"
             name="name"
             id="name"
             placeholder="Recipe Name"
+            value={name.name}
             onChange={handleInputChange}
+            required
+            autoComplete = 'off'
           />
           <textarea
             name="resume"
@@ -88,21 +107,26 @@ export const Create = () => {
             cols="30"
             rows="10"
             placeholder="Recipe Resume"
+            value={resume.resume}
             onChange={handleInputChange}
           />
           <input
             type="number"
             name="healthScore"
             placeholder="Health Score ej.: 78"
+            min='1' 
+            max='100'
             onChange={handleInputChange}
+            value={healthScore.healthScore}
+            required
           />
           <div className={styles.container_filter}>
             <h4>Selected Diets: </h4>
             <div className={styles.selected_diets}>
               {dieta.length ? (
-                dieta.map((d) => <p> {d} </p>)
+                dieta.map((d) => <p key={d}> {d} </p>)
               ) : (
-                <p>No Diets Select</p>
+                <span className={ styles.no_selected_diets} >No Diets Select</span>
               )}
             </div>
             {diets?.map((d) => (
@@ -112,14 +136,14 @@ export const Create = () => {
                 name="diet"
                 value={d.name}
                 key={d.id}
-                onChange={handleDietChange}
+                onChange={handleInputChange}
               />
             ))}
 
             <ol className={styles.filters}>
               {diets?.map((d) => (
                 <li key={d.id}  >
-                  <label htmlFor={d.name} onChange={handleDietChange}>
+                  <label htmlFor={d.name} onChange={handleInputChange}>
                     {d.name}
                   </label>
                 </li>
@@ -132,7 +156,7 @@ export const Create = () => {
             {pasos?.map((step) => (
               <div className={styles.step} key={step}>
                 <h4>Step {step}</h4>
-                <input type="text" name="step" placeholder="Step" onChange={handleStepsChange}/>
+                <input type="text" name={`step${step}`} placeholder="Step" onChange={handleInputChange}/>
                 <button 
                   className={styles.button_add_step} 
                   onClick={ (e) =>{
@@ -145,7 +169,7 @@ export const Create = () => {
               </div>
             ))}
           </div>
-          <input type="url" name="img" id="" onChange={handleInputChange} placeholder="Img Url ej.: https://website/pizza.jpg" />
+          <input type="url" name="img" id="" placeholder="Img Url ej.: https://website/pizza.jpg" onChange={ handleInputChange} required/>
           <input type="submit" className={styles.btn_submit}  value="Send"/>
         </form>
       </div>
