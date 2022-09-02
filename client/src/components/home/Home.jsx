@@ -55,11 +55,9 @@ export const Home = () => {
 
   const handleFilterByDiets = async (diet) => {
     if (diet !== "All" && diet !== "healthScore" && diet !== "az") {
-      var recipesFilter = [];
       const recipe = await getAllRecipes();
-      dispatch(showAllRecipes(recipe));
 
-      recipesFilter = recipes?.filter((r) => r.diets.includes(diet));
+      let recipesFilter = await recipe?.filter((r) => r.diets.includes(diet));
       dispatch(showAllRecipes(recipesFilter));
 
     } else if (diet === "healthScore") {
@@ -69,8 +67,6 @@ export const Home = () => {
       dispatch(showAllRecipes(recipeSortByHS));
       
     } else if (diet === "az") {
-      // const recipe = await getAllRecipes();
-      // dispatch(showAllRecipes(recipe));
 
       let recipeSortByAZ = recipes.slice().sort((a, b) => {
         let nameA = a.name.toLowerCase();

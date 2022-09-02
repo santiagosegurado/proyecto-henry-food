@@ -12,7 +12,7 @@ const getRecipes = async (req, res) => {
   );
   const { results } = await resp.json();
 
-  const newResults = results.map((r) => ({
+  const newResults = results?.map((r) => ({
     id: r.id,
     name: r.title,
     resume: r.summary,
@@ -22,7 +22,9 @@ const getRecipes = async (req, res) => {
     steps: r.analyzedInstructions[0]?.steps,
   }));
 
-  const allRecipeDB = await Recipe.findAll();
+  const allRecipeDB = await Recipe.findAll({
+    include: [Diet]
+  });
 
   try {
     // Si req.query existe
@@ -38,11 +40,11 @@ const getRecipes = async (req, res) => {
           name: {
             [Op.like]: `%${req.query.name}%`,
           },
-        },
+        }, include: [Diet]
       });
 
       // No hizo match
-      if (!recipeFilter.length) {
+      if (!recipeFilter.length && !recipeFilterDB) {
         return res.status(201).send("No Match Found");
       }
 
@@ -83,7 +85,7 @@ const getRecipeById = async (req, res) => {
       
       }else {
         
-        var recipeById = await Recipe.findAll({
+        var recipeById = await Recipe.findOne({
           where: {
             id: recipeId,
           
@@ -132,9 +134,11 @@ const createRecipes = async (req, res) => {
     await newRecipe.setDiets(dietas);
 
     res.json(newRecipe);
+
   } catch (error) {
     res.status(404).send({ message: error.message });
   }
 };
+
 
 export { getRecipes, createRecipes, getRecipeById };

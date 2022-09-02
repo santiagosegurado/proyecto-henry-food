@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getRecipeById } from "../../helpers/getRecipeById";
 import styles from "./recipe.module.scss";
+
 
 export const Recipe = () => {
   // Hooks
   const { id } = useParams();
   const [recipe, setRecipe] = useState({});
-  var arraySteps = [];
-
-  if (recipe.steps?.step1) {
-    for (let clave in recipe.steps) {
-      arraySteps.push(recipe.steps[clave]);
-    }
-  }
+  const navigate = useNavigate();
 
   useEffect(() => {
     getRecipeById(id).then(setRecipe);
@@ -45,8 +40,8 @@ export const Recipe = () => {
             </ul>
           </div>
         </div>
+        <button onClick={() => navigate('/home')}>Return</button>
       </div>
-
       <div className={styles.body_container}>
         <h2>Resume</h2>
         <span dangerouslySetInnerHTML={{ __html: `${recipe.resume}` }}></span>
@@ -55,16 +50,18 @@ export const Recipe = () => {
       <div className={styles.steps_container}>
         <div className={styles.header_steps}>
           <h2>Recipe Steps</h2>
-          <span>steps { recipe.steps?.step1 ? arraySteps.length : recipe.steps?.length}</span>
+          <span>steps { recipe.steps?.step1 ? Object.keys(recipe.steps).length : recipe.steps?.length}</span>
         </div>
         <div className="steps_body">
           {recipe?.steps?.step1 ? (
-            arraySteps.map((step, i) => (
-              <div className={styles.step} key={i}>
+            
+            Object.keys(recipe.steps).map((key, i)=> {
+              return (<div className={styles.step} key={i}>
                 <h2>Step {i+1}</h2>
-                <span>{step}</span>
-              </div>
-            ))
+                <span>{recipe.steps[key]}</span>
+              </div>)
+            })
+            
           ) : (
             recipe.steps?.map((step) => (
               <div className={styles.step} key={step.number}>
@@ -80,6 +77,7 @@ export const Recipe = () => {
             ))
           )}
         </div>
+        
       </div>
     </>
   );

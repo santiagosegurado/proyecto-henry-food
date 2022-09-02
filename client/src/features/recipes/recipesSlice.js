@@ -13,7 +13,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // ]
 
 export const getRecipes = createAsyncThunk("recipes/getRecipes", async (name = '') => {
-  const resp = await fetch(`https://api-food-henry.herokuapp.com/recipes${name}`);
+  const resp = await fetch(`http://localhost:3004/recipes${name}`);
   const data = await resp.json();
 
   return data;

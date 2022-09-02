@@ -11,18 +11,18 @@ export const Create = () => {
   const dispatch = useDispatch();
   const { diets } = useSelector((state) => state.diets);
 
-  const [name, setName] = useState({name: '', valid: false});
+  const [name, setName] = useState({name: '', valid: null});
   const [resume, setResume] = useState('');
-  const [healthScore, setHealthScore] = useState({healthScore:0, valid: false});
-  const [dieta, setDieta] = useState({dietas: [], valid: false});
+  const [healthScore, setHealthScore] = useState({healthScore:'', valid: null});
+  const [dieta, setDieta] = useState({dietas: [], valid: null});
   const [stepsForm, setStepsForm] = useState([]);
-  const [img, setImg] = useState({img: '', valid: false});
+  const [img, setImg] = useState({img: '', valid: null});
   
   const [pasos, setPasos] = useState([1]);
 
   // Metodos
   const createRecipe = async (recipe) => {
-    const resp = await fetch("https://api-food-henry.herokuapp.com/recipes", {
+    const resp = await fetch("http://localhost:3004/recipes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +34,35 @@ export const Create = () => {
 
     return data;
   };
+
+  const validate = () => {
+    if (/[a-zA-Z0-9]/.test(name.name) ) {
+      setName({...name, valid: true});
+    }else {
+      setName({...name, valid: false});
+    }
+
+    if (healthScore.healthScore > 1 && healthScore.healthScore < 101) {
+      setHealthScore({...healthScore, valid: true});
+    
+    }else{
+      setHealthScore({...healthScore, valid: false});
+    }
+
+    if (dieta.dietas !== []) {
+      setDieta({...dieta, valid: true});
+    }else {
+      setDieta({...dieta, valid: false});
+    }
+
+    if (img.img.includes('https://')) {
+      setImg({...img, valid: true});
+    }else {
+      setImg({...img, valid: false});
+    }
+  }
   
+  // Handlers
   const handleInputChange = (e) => {
     if (e.target.name === "name") {
       
@@ -89,7 +117,8 @@ export const Create = () => {
       <div className={styles.form_container}>
         <form onSubmit={handleSubmit}>
           {
-            !name.valid && <p>Add Name</p>
+            name.valid === false &&
+            <span className={styles.error} style={{width: '140px'}}>No Name Added</span>
           }
           <input
             type="text"
@@ -100,6 +129,8 @@ export const Create = () => {
             onChange={handleInputChange}
             required
             autoComplete = 'off'
+            onKeyUp={validate}
+            onBlur={validate}
           />
           <textarea
             name="resume"
@@ -110,6 +141,10 @@ export const Create = () => {
             value={resume.resume}
             onChange={handleInputChange}
           />
+          {
+            healthScore.valid === false &&
+            <span className={styles.error} style={{width: '300px'}}>The number is not between 1 and 100 or does not exist</span>
+          }
           <input
             type="number"
             name="healthScore"
@@ -118,15 +153,17 @@ export const Create = () => {
             max='100'
             onChange={handleInputChange}
             value={healthScore.healthScore}
+            onKeyUp={validate}
+            onBlur={validate}
             required
           />
           <div className={styles.container_filter}>
             <h4>Selected Diets: </h4>
             <div className={styles.selected_diets}>
-              {dieta.length ? (
-                dieta.map((d) => <p key={d}> {d} </p>)
+              {dieta.dietas.length ? (
+                dieta.dietas.map((d) => <p key={d}> {d} </p>)
               ) : (
-                <span className={ styles.no_selected_diets} >No Diets Select</span>
+                <span className={ dieta.valid === false ?  styles.error: styles.no_selected_diets} >No Diets Select</span>
               )}
             </div>
             {diets?.map((d) => (
@@ -137,13 +174,14 @@ export const Create = () => {
                 value={d.name}
                 key={d.id}
                 onChange={handleInputChange}
+                onClick={validate}
               />
             ))}
 
             <ol className={styles.filters}>
               {diets?.map((d) => (
                 <li key={d.id}  >
-                  <label htmlFor={d.name} onChange={handleInputChange}>
+                  <label htmlFor={d.name} onChange={handleInputChange} onClick={validate}>
                     {d.name}
                   </label>
                 </li>
@@ -169,8 +207,28 @@ export const Create = () => {
               </div>
             ))}
           </div>
-          <input type="url" name="img" id="" placeholder="Img Url ej.: https://website/pizza.jpg" onChange={ handleInputChange} required/>
-          <input type="submit" className={styles.btn_submit}  value="Send"/>
+          {
+            img.valid === false && 
+            <span className={styles.error}>Url not valid ej.:'https://website/pizza.jpg'</span>
+          }
+          <input 
+            type="url" 
+            name="img" 
+            placeholder="Img Url ej.:'https://website/pizza.jpg'" 
+            onChange={ handleInputChange} 
+            onKeyUp={validate}
+            onBlur={validate}
+            required
+          />
+          {
+            name.valid &&
+            healthScore.valid &&
+            dieta.valid &&
+            img.valid ?
+            <input type="submit" className={styles.btn_submit}  value="Send" />
+            : 
+            <input type="submit" className={styles.btn_submit}  value="Send" disabled/>
+          }
         </form>
       </div>
     </div>
